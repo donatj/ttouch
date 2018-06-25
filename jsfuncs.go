@@ -11,10 +11,7 @@ import (
 func jsreadfile(call otto.FunctionCall) otto.Value {
 	right, _ := call.Argument(0).ToString()
 
-	result, err := otto.ToValue(nil)
-	if err != nil {
-		log.Println(err)
-	}
+	result := otto.NullValue()
 
 	c, err := ioutil.ReadFile(right)
 	if err == nil {
@@ -34,10 +31,7 @@ type jsglob struct {
 func (o jsglob) glob(call otto.FunctionCall) otto.Value {
 	right, _ := call.Argument(0).ToString()
 
-	result, err := o.otto.ToValue(nil)
-	if err != nil {
-		log.Println(err)
-	}
+	result := otto.NullValue()
 
 	m, err := filepath.Glob(right)
 	if err == nil {
