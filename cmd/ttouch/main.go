@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/donatj/ttouch"
@@ -28,7 +29,10 @@ func main() {
 	for _, f := range envf.Files {
 		_, err := os.Stat(f)
 		if os.IsNotExist(err) {
-			t := tmpr.GetTemplate(f)
+			t, err := tmpr.GetTemplate(f)
+			if err != nil && err != ttouch.ErrTemplateNotFound {
+				log.Fatal(err)
+			}
 
 			mode := os.FileMode(0644)
 			ioutil.WriteFile(f, []byte(t), mode)

@@ -84,7 +84,7 @@ func goJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "go.js", size: 439, mode: os.FileMode(420), modTime: time.Unix(1529959718, 0)}
+	info := bindataFileInfo{name: "go.js", size: 439, mode: os.FileMode(420), modTime: time.Unix(1529961886, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -104,7 +104,7 @@ func phpJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "php.js", size: 167, mode: os.FileMode(420), modTime: time.Unix(1529959718, 0)}
+	info := bindataFileInfo{name: "php.js", size: 167, mode: os.FileMode(420), modTime: time.Unix(1529961886, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
