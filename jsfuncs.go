@@ -8,7 +8,11 @@ import (
 	"github.com/robertkrimen/otto"
 )
 
-func jsreadfile(call otto.FunctionCall) otto.Value {
+type jsfuncs struct {
+	otto *otto.Otto
+}
+
+func (o jsfuncs) jsreadfile(call otto.FunctionCall) otto.Value {
 	right, _ := call.Argument(0).ToString()
 
 	result := otto.NullValue()
@@ -24,11 +28,7 @@ func jsreadfile(call otto.FunctionCall) otto.Value {
 	return result
 }
 
-type jsglob struct {
-	otto *otto.Otto
-}
-
-func (o jsglob) glob(call otto.FunctionCall) otto.Value {
+func (o jsfuncs) glob(call otto.FunctionCall) otto.Value {
 	right, _ := call.Argument(0).ToString()
 
 	result := otto.NullValue()
@@ -39,6 +39,30 @@ func (o jsglob) glob(call otto.FunctionCall) otto.Value {
 		if err != nil {
 			log.Println(err)
 		}
+	}
+
+	return result
+}
+
+func (o jsfuncs) scanup(call otto.FunctionCall) otto.Value {
+	right, _ := call.Argument(0).ToString()
+
+	result, err := o.otto.ToValue(scanCwdUpForFile(right))
+	if err != nil {
+		log.Println(err)
+	}
+
+	return result
+}
+
+func (o jsfuncs) splitpath(call otto.FunctionCall) otto.Value {
+	right, _ := call.Argument(0).ToString()
+
+	d, f := filepath.Split(right)
+
+	result, err := o.otto.ToValue([]string{d, f})
+	if err != nil {
+		log.Println(err)
 	}
 
 	return result

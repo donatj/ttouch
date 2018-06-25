@@ -34,12 +34,7 @@ func (t *templater) GetTemplate(filename string) (string, error) {
 
 	tmpFname := ext + ".js"
 
-	cwd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	tpls := scanUpForTemplates(cwd, tmpFname)
+	tpls := scanCwdUpForFile(filepath.Join(".ttouch", tmpFname))
 	for _, tpl := range tpls {
 		js, err := ioutil.ReadFile(tpl)
 		if err != nil {
@@ -64,13 +59,23 @@ func (t *templater) GetTemplate(filename string) (string, error) {
 	return "", ErrTemplateNotFound
 }
 
-func scanUpForTemplates(dir, tmpFname string) []string {
+func scanCwdUpForFile(fname string) []string {
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+		return []string{}
+	}
+
+	return scanUpForFile(cwd, fname)
+}
+
+func scanUpForFile(dir, fname string) []string {
 	cwdParts := strings.Split(dir, string(os.PathSeparator))
 	tmpls := []string{}
 
 	for n := len(cwdParts) - 1; n >= 0; n-- {
 		p := append([]string{"/"}, cwdParts[0:n+1]...)
-		p = append(p, ".ttouch", tmpFname)
+		p = append(p, fname)
 
 		tp := filepath.Join(p...)
 
@@ -83,21 +88,28 @@ func scanUpForTemplates(dir, tmpFname string) []string {
 }
 
 type JSFlags struct {
-	Filename string
-	Flags    interface{}
+	Filename    string
+	AbsFilename string
+	Flags       interface{}
 }
 
 func runJSTemplate(js, filename string, vmflags interface{}) string {
 	vm := otto.New()
 
+	abs, _ := filepath.Abs(filename)
+
 	vm.Set("VM", &JSFlags{
-		Filename: filename,
-		Flags:    vmflags,
+		Filename:    filename,
+		AbsFilename: abs,
+		Flags:       vmflags,
 	})
 
-	vm.Set("Filename", filename)
-	vm.Set("ReadFile", jsreadfile)
-	vm.Set("Glob", jsglob{vm}.glob)
+	jsf := jsfuncs{vm}
+
+	vm.Set("SplitPath", jsf.splitpath)
+	vm.Set("ReadFile", jsf.jsreadfile)
+	vm.Set("Glob", jsf.glob)
+	vm.Set("ScanUp", jsf.scanup)
 
 	v, err := vm.Run(js)
 	if err != nil {
