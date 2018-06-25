@@ -1,4 +1,4 @@
-package templater
+package ttouch
 
 import (
 	"io/ioutil"

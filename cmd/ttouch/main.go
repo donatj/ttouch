@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/donatj/ttouch/templater"
+	"github.com/donatj/ttouch"
 )
 
 type envflags struct {
@@ -23,7 +23,7 @@ func init() {
 }
 
 func main() {
-	tmpr := templater.New(envf)
+	tmpr := ttouch.New(envf)
 
 	for _, f := range envf.Files {
 		_, err := os.Stat(f)

@@ -1,4 +1,4 @@
-package templater
+package ttouch
 
 import (
 	"log"
@@ -18,7 +18,7 @@ func New(envflags interface{}) *templater {
 	}
 }
 
-//go:generate go-bindata -prefix ../templates -nomemcopy -pkg templater -o templates.go ../templates/...
+//go:generate go-bindata -prefix templates -nomemcopy -pkg ttouch -o templates.go templates/...
 
 func (t *templater) GetTemplate(filename string) string {
 	ext := filepath.Ext(filename)
