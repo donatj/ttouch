@@ -3,10 +3,14 @@ interface ComposerJSON {
 		"psr-4": {
 			[s: string]: string;
 		}// | null
+		,
+		"psr-0": {
+			[s: string]: string;
+		}
 	} | null;
 }
 
-function getPsr4Map() {
+function getPsrMap() {
 	let nss: { [s: string]: string } = {}
 	let items = ScanUp("composer.json");
 	if (items.length > 0) {
@@ -15,6 +19,12 @@ function getPsr4Map() {
 		let content = ReadFile(composerPath);
 		if (content !== null) {
 			let cjson = <ComposerJSON>JSON.parse(content);
+
+			if (cjson.autoload && cjson.autoload["psr-0"]) {
+				for (let x in cjson.autoload["psr-0"]) {
+					nss[composerDir + cjson.autoload["psr-0"][x]] = "";
+				}
+			}
 
 			if (cjson.autoload && cjson.autoload["psr-4"]) {
 				for (let x in cjson.autoload["psr-4"]) {
@@ -27,28 +37,32 @@ function getPsr4Map() {
 	return nss;
 }
 
+function trimSlashes(s: string) {
+	return s.replace(/(^\\+)|(\\+$)/g, "");
+}
+
 (() => {
-	let map = getPsr4Map();
+	let map = getPsrMap();
 	let ns = "";
 
 	for (var m in map) {
-		if( VM.AbsFilename.indexOf(m) === 0 ) {
+		if (VM.AbsFilename.indexOf(m) === 0) {
 			let dir = SplitPath(VM.AbsFilename)[0];
 			let suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
-			let prefix = map[m].replace(/(^\\+)|(\\+$)/g, "");
-			ns = `${prefix}\\${suffix}`;
+			let prefix = trimSlashes(map[m]);
+			ns = trimSlashes(`${prefix}\\${suffix}`);
 			break;
 		}
 	}
 
-	
+
 	let result = "";
 	if (VM.Flags.Executable) {
 		result += "#!/usr/bin/env php\n";
 	}
 
 	result += "<?php\n\n";
-	if(ns !== "") {
+	if (ns !== "") {
 		result += `namespace ${ns};\n\n`
 	}
 

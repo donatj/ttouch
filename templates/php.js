@@ -1,5 +1,5 @@
 "use strict";
-function getPsr4Map() {
+function getPsrMap() {
     var nss = {};
     var items = ScanUp("composer.json");
     if (items.length > 0) {
@@ -8,6 +8,11 @@ function getPsr4Map() {
         var content = ReadFile(composerPath);
         if (content !== null) {
             var cjson = JSON.parse(content);
+            if (cjson.autoload && cjson.autoload["psr-0"]) {
+                for (var x in cjson.autoload["psr-0"]) {
+                    nss[composerDir + cjson.autoload["psr-0"][x]] = "";
+                }
+            }
             if (cjson.autoload && cjson.autoload["psr-4"]) {
                 for (var x in cjson.autoload["psr-4"]) {
                     nss[composerDir + cjson.autoload["psr-4"][x]] = x;
@@ -17,15 +22,18 @@ function getPsr4Map() {
     }
     return nss;
 }
+function trimSlashes(s) {
+    return s.replace(/(^\\+)|(\\+$)/g, "");
+}
 (function () {
-    var map = getPsr4Map();
+    var map = getPsrMap();
     var ns = "";
     for (var m in map) {
         if (VM.AbsFilename.indexOf(m) === 0) {
             var dir = SplitPath(VM.AbsFilename)[0];
             var suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
-            var prefix = map[m].replace(/(^\\+)|(\\+$)/g, "");
-            ns = prefix + "\\" + suffix;
+            var prefix = trimSlashes(map[m]);
+            ns = trimSlashes(prefix + "\\" + suffix);
             break;
         }
     }
