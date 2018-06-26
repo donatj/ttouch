@@ -13,8 +13,12 @@
 		}
 	}
 
-	return `// ${VM.Filename}
+	let contents = "";
+	if(pkg == "main" && VM.Filename == "main.go") {
+		contents = `func main(){\n\n}\n`;
+	}
 
-package ${pkg}
-`;
+	return `package ${pkg}
+
+${contents}`;
 })();
