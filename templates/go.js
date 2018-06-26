@@ -13,7 +13,7 @@
     }
     var contents = "";
     if (pkg == "main" && VM.Filename == "main.go") {
-        contents = "func main(){\n\n}\n";
+        contents = "func main() {\n\n}\n";
     }
     return "package " + pkg + "\n\n" + contents;
 })();
