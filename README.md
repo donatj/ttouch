@@ -1,5 +1,8 @@
 # ttouch
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/donatj/ttouch)](https://goreportcard.com/report/github.com/donatj/ttouch)
+[![GoDoc](https://godoc.org/github.com/donatj/ttouch?status.svg)](https://godoc.org/github.com/donatj/ttouch)
+
 Unix touch with JavaScript driven templates.
 
 ## Templates
