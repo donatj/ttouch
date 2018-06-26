@@ -28,12 +28,25 @@ func New(envflags interface{}) *templater {
 var ErrTemplateNotFound = errors.New("tempate not found")
 
 func (t *templater) GetTemplate(filename string) (string, error) {
+	_, file := filepath.Split(filename)
+	file = strings.ToLower(file)
+	out, err := t.getTemplateFor(file+".js", filename)
+	if err != ErrTemplateNotFound {
+		if err != nil {
+			return "", err
+		}
+
+		return out, nil
+	}
+
 	ext := filepath.Ext(filename)
 	ext = strings.ToLower(ext)
 	ext = strings.Trim(ext, ". ")
 
-	tmpFname := ext + ".js"
+	return t.getTemplateFor(ext+".js", filename)
+}
 
+func (t *templater) getTemplateFor(tmpFname, filename string) (string, error) {
 	tpls := scanCwdUpForFile(filepath.Join(".ttouch", tmpFname))
 	for _, tpl := range tpls {
 		js, err := ioutil.ReadFile(tpl)
