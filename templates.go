@@ -3,6 +3,7 @@
 // templates/go.js
 // templates/md.js
 // templates/php.js
+// templates/sh.js
 // DO NOT EDIT!
 
 package ttouch
@@ -85,7 +86,7 @@ func goJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "go.js", size: 439, mode: os.FileMode(420), modTime: time.Unix(1529979677, 0)}
+	info := bindataFileInfo{name: "go.js", size: 439, mode: os.FileMode(420), modTime: time.Unix(1529980018, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -105,7 +106,7 @@ func mdJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "md.js", size: 194, mode: os.FileMode(420), modTime: time.Unix(1529979677, 0)}
+	info := bindataFileInfo{name: "md.js", size: 194, mode: os.FileMode(420), modTime: time.Unix(1529980018, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -125,7 +126,27 @@ func phpJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "php.js", size: 1534, mode: os.FileMode(420), modTime: time.Unix(1529979677, 0)}
+	info := bindataFileInfo{name: "php.js", size: 1534, mode: os.FileMode(420), modTime: time.Unix(1529980018, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _shJs = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x52\x2a\x2d\x4e\x55\x28\x2e\x29\xca\x4c\x2e\x51\xb2\xe6\x52\x52\x56\xd4\x4f\xca\xcc\xd3\x2f\xce\x88\xc9\x2b\x4e\x2d\x51\xd0\x4d\x8d\xc9\x8b\xc9\x53\xb2\xe6\x02\x04\x00\x00\xff\xff\x3b\x36\xcd\x4e\x27\x00\x00\x00"
+
+func shJsBytes() ([]byte, error) {
+	return bindataRead(
+		_shJs,
+		"sh.js",
+	)
+}
+
+func shJs() (*asset, error) {
+	bytes, err := shJsBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "sh.js", size: 39, mode: os.FileMode(420), modTime: time.Unix(1529980018, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -185,6 +206,7 @@ var _bindata = map[string]func() (*asset, error){
 	"go.js": goJs,
 	"md.js": mdJs,
 	"php.js": phpJs,
+	"sh.js": shJs,
 }
 
 // AssetDir returns the file names below a certain
@@ -230,6 +252,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"go.js": &bintree{goJs, map[string]*bintree{}},
 	"md.js": &bintree{mdJs, map[string]*bintree{}},
 	"php.js": &bintree{phpJs, map[string]*bintree{}},
+	"sh.js": &bintree{shJs, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
