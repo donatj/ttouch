@@ -35,7 +35,7 @@ function getPsr4Map() {
 		if( VM.AbsFilename.indexOf(m) === 0 ) {
 			let dir = SplitPath(VM.AbsFilename)[0];
 			let suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
-			let prefix = map[m].replace(/(^\\+)|(\\+$)/g, "\\");
+			let prefix = map[m].replace(/(^\\+)|(\\+$)/g, "");
 			ns = `${prefix}\\${suffix}`;
 			break;
 		}

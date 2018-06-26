@@ -24,7 +24,7 @@ function getPsr4Map() {
         if (VM.AbsFilename.indexOf(m) === 0) {
             var dir = SplitPath(VM.AbsFilename)[0];
             var suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
-            var prefix = map[m].replace(/(^\\+)|(\\+$)/g, "\\");
+            var prefix = map[m].replace(/(^\\+)|(\\+$)/g, "");
             ns = prefix + "\\" + suffix;
             break;
         }
