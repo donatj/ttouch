@@ -1,8 +1,10 @@
 module github.com/donatj/ttouch
 
-go 1.14
+go 1.19
+
+require github.com/robertkrimen/otto v0.2.1
 
 require (
-	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
+	golang.org/x/text v0.5.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )
