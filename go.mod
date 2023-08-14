@@ -1,6 +1,6 @@
 module github.com/donatj/ttouch
 
-go 1.19
+go 1.21
 
 require github.com/robertkrimen/otto v0.2.1
 
