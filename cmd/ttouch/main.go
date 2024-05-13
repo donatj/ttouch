@@ -34,6 +34,10 @@ func main() {
 			}
 
 			mode := os.FileMode(0644)
+			if envf.Executable {
+				mode = os.FileMode(0755)
+			}
+
 			os.WriteFile(f, []byte(t), mode)
 		} else {
 			// UPDATE MODIFIED LATER
