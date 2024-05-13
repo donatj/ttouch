@@ -5,6 +5,12 @@
 
 Unix touch with JavaScript driven templates.
 
+## Installation
+
+```bash
+go install github.com/donatj/ttouch/cmd/ttouch@latest
+```
+
 ## Templates
 
 The templating engine runs on the [otto](https://github.com/robertkrimen/otto) JavaScript runtime which targets ES5.
