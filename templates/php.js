@@ -33,7 +33,7 @@ function trimSlashes(s) {
             var dir = SplitPath(VM.AbsFilename)[0];
             var suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
             var prefix = trimSlashes(map[m]);
-            ns = trimSlashes(prefix + "\\" + suffix);
+            ns = trimSlashes("".concat(prefix, "\\").concat(suffix));
             break;
         }
     }
@@ -43,7 +43,7 @@ function trimSlashes(s) {
     }
     result += "<?php\n\n";
     if (ns !== "") {
-        result += "namespace " + ns + ";\n\n";
+        result += "namespace ".concat(ns, ";\n\n");
     }
     return result;
 })();

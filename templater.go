@@ -11,8 +11,6 @@ import (
 	"github.com/robertkrimen/otto"
 )
 
-//go:generate go-bindata -prefix templates -nomemcopy -pkg ttouch -o templates.go templates/...
-
 type templater struct {
 	envflags interface{}
 }

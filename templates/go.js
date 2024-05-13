@@ -15,5 +15,5 @@
     if (pkg == "main" && VM.Filename == "main.go") {
         contents = "func main() {\n\n}\n";
     }
-    return "package " + pkg + "\n\n" + contents;
+    return "package ".concat(pkg, "\n\n").concat(contents);
 })();
