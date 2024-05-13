@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -35,7 +34,7 @@ func main() {
 			}
 
 			mode := os.FileMode(0644)
-			ioutil.WriteFile(f, []byte(t), mode)
+			os.WriteFile(f, []byte(t), mode)
 		} else {
 			// UPDATE MODIFIED LATER
 		}

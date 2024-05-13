@@ -2,12 +2,12 @@ package ttouch
 
 import (
 	"errors"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/donatj/ttouch/templates"
 	"github.com/robertkrimen/otto"
 )
 
@@ -49,7 +49,7 @@ func (t *templater) GetTemplate(filename string) (string, error) {
 func (t *templater) getTemplateFor(tmpFname, filename string) (string, error) {
 	tpls := scanCwdUpForFile(filepath.Join(".ttouch", tmpFname))
 	for _, tpl := range tpls {
-		js, err := ioutil.ReadFile(tpl)
+		js, err := os.ReadFile(tpl)
 		if err != nil {
 			log.Println(tpl, err)
 			continue
@@ -61,7 +61,7 @@ func (t *templater) getTemplateFor(tmpFname, filename string) (string, error) {
 		}
 	}
 
-	js, _ := Asset(tmpFname)
+	js, _ := templates.Content.ReadFile(tmpFname)
 	if js != nil && len(js) > 0 {
 		out := runJSTemplate(string(js), filename, t.envflags)
 		if out != "" {

@@ -1,8 +1,8 @@
 package ttouch
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/robertkrimen/otto"
@@ -17,7 +17,7 @@ func (o jsfuncs) jsreadfile(call otto.FunctionCall) otto.Value {
 
 	result := otto.NullValue()
 
-	c, err := ioutil.ReadFile(right)
+	c, err := os.ReadFile(right)
 	if err == nil {
 		result, err = otto.ToValue(string(c))
 		if err != nil {
