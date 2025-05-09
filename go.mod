@@ -2,7 +2,7 @@ module github.com/donatj/ttouch
 
 go 1.22
 
-require github.com/robertkrimen/otto v0.4.0
+require github.com/robertkrimen/otto v0.5.1
 
 require (
 	golang.org/x/text v0.15.0 // indirect
