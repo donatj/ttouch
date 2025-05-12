@@ -1,10 +1,21 @@
 module github.com/donatj/ttouch
 
-go 1.22
+go 1.23.0
 
-require github.com/robertkrimen/otto v0.5.1
+toolchain go1.24.0
+
+require modernc.org/quickjs v0.14.0
 
 require (
-	golang.org/x/text v0.15.0 // indirect
-	gopkg.in/sourcemap.v1 v1.0.5 // indirect
+	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/ncruces/go-strftime v0.1.9 // indirect
+	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	modernc.org/libc v1.65.6 // indirect
+	modernc.org/libquickjs v0.11.0 // indirect
+	modernc.org/mathutil v1.7.1 // indirect
+	modernc.org/memory v1.10.0 // indirect
 )

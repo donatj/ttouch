@@ -2,13 +2,14 @@ package ttouch
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/donatj/ttouch/templates"
-	"github.com/robertkrimen/otto"
+	"modernc.org/quickjs"
 )
 
 type templater struct {
@@ -105,32 +106,51 @@ type JSFlags struct {
 }
 
 func runJSTemplate(js, filename string, vmflags interface{}) string {
-	vm := otto.New()
+	// vm := otto.New()
 
-	abs, _ := filepath.Abs(filename)
+	// abs, _ := filepath.Abs(filename)
 
-	vm.Set("VM", &JSFlags{
-		Filename:    filename,
-		AbsFilename: abs,
-		Flags:       vmflags,
-	})
+	vm, err := quickjs.NewVM()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer vm.Close()
 
-	jsf := jsfuncs{vm}
+	vm.RegisterFunc("Log", log.Println, false)
+	vm.RegisterFunc("ReadFile", jsReadfile, false)
+	vm.RegisterFunc("Glob", jsGlob, false)
+	vm.RegisterFunc("ScanUp", jsScanUp, false)
+	vm.RegisterFunc("SplitPath", jsSplitpath, false)
 
-	vm.Set("SplitPath", jsf.splitpath)
-	vm.Set("ReadFile", jsf.jsreadfile)
-	vm.Set("Glob", jsf.glob)
-	vm.Set("ScanUp", jsf.scanup)
-
-	v, err := vm.Run(js)
+	r, err := vm.Eval(string(js), quickjs.EvalGlobal)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	s, err := v.ToString()
-	if err != nil {
-		log.Fatal(err)
-	}
+	s := fmt.Sprint(r)
+
+	// vm.Set("VM", &JSFlags{
+	// 	Filename:    filename,
+	// 	AbsFilename: abs,
+	// 	Flags:       vmflags,
+	// })
+
+	// jsf := jsfuncs{vm}
+
+	// vm.Set("SplitPath", jsf.splitpath)
+	// vm.Set("ReadFile", jsf.jsreadfile)
+	// vm.Set("Glob", jsf.glob)
+	// vm.Set("ScanUp", jsf.scanup)
+
+	// v, err := vm.Run(js)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// s, err := v.ToString()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	return s
 }
