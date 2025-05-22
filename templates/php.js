@@ -1,20 +1,20 @@
 "use strict";
 function getPsrMap() {
-    var nss = {};
-    var items = ScanUp("composer.json");
+    let nss = {};
+    let items = ScanUp("composer.json");
     if (items.length > 0) {
-        var composerPath = items[0];
-        var composerDir = SplitPath(composerPath)[0];
-        var content = ReadFile(composerPath);
+        let composerPath = items[0];
+        let composerDir = SplitPath(composerPath)[0];
+        let content = ReadFile(composerPath);
         if (content !== null) {
-            var cjson = JSON.parse(content);
+            let cjson = JSON.parse(content);
             if (cjson.autoload && cjson.autoload["psr-0"]) {
-                for (var x in cjson.autoload["psr-0"]) {
+                for (let x in cjson.autoload["psr-0"]) {
                     nss[composerDir + cjson.autoload["psr-0"][x]] = "";
                 }
             }
             if (cjson.autoload && cjson.autoload["psr-4"]) {
-                for (var x in cjson.autoload["psr-4"]) {
+                for (let x in cjson.autoload["psr-4"]) {
                     nss[composerDir + cjson.autoload["psr-4"][x]] = x;
                 }
             }
@@ -25,25 +25,25 @@ function getPsrMap() {
 function trimSlashes(s) {
     return s.replace(/(^\\+)|(\\+$)/g, "");
 }
-(function () {
-    var map = getPsrMap();
-    var ns = "";
+(() => {
+    let map = getPsrMap();
+    let ns = "";
     for (var m in map) {
         if (VM.AbsFilename.indexOf(m) === 0) {
-            var dir = SplitPath(VM.AbsFilename)[0];
-            var suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
-            var prefix = trimSlashes(map[m]);
-            ns = trimSlashes("".concat(prefix, "\\").concat(suffix));
+            let dir = SplitPath(VM.AbsFilename)[0];
+            let suffix = dir.substr(m.length).replace(/(.*?)[\/]*$/g, "$1").replace(/[\/\\]+/g, "\\");
+            let prefix = trimSlashes(map[m]);
+            ns = trimSlashes(`${prefix}\\${suffix}`);
             break;
         }
     }
-    var result = "";
+    let result = "";
     if (VM.Flags.Executable) {
         result += "#!/usr/bin/env php\n";
     }
     result += "<?php\n\n";
     if (ns !== "") {
-        result += "namespace ".concat(ns, ";\n\n");
+        result += `namespace ${ns};\n\n`;
     }
     return result;
 })();
