@@ -106,10 +106,6 @@ type JSFlags struct {
 }
 
 func runJSTemplate(js, filename string, vmflags interface{}) string {
-	// vm := otto.New()
-
-	// abs, _ := filepath.Abs(filename)
-
 	vm, err := quickjs.NewVM()
 	if err != nil {
 		log.Fatal(err)
@@ -128,29 +124,6 @@ func runJSTemplate(js, filename string, vmflags interface{}) string {
 	}
 
 	s := fmt.Sprint(r)
-
-	// vm.Set("VM", &JSFlags{
-	// 	Filename:    filename,
-	// 	AbsFilename: abs,
-	// 	Flags:       vmflags,
-	// })
-
-	// jsf := jsfuncs{vm}
-
-	// vm.Set("SplitPath", jsf.splitpath)
-	// vm.Set("ReadFile", jsf.jsreadfile)
-	// vm.Set("Glob", jsf.glob)
-	// vm.Set("ScanUp", jsf.scanup)
-
-	// v, err := vm.Run(js)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// s, err := v.ToString()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	return s
 }
