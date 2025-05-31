@@ -1,6 +1,7 @@
 package ttouch
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -112,11 +113,24 @@ func runJSTemplate(js, filename string, vmflags interface{}) string {
 	}
 	defer vm.Close()
 
+	abs, _ := filepath.Abs(filename)
+
 	vm.RegisterFunc("Log", log.Println, false)
 	vm.RegisterFunc("ReadFile", jsReadfile, false)
 	vm.RegisterFunc("Glob", jsGlob, false)
 	vm.RegisterFunc("ScanUp", jsScanUp, false)
 	vm.RegisterFunc("SplitPath", jsSplitpath, false)
+
+	j, err := json.Marshal(&JSFlags{
+		Filename:    filename,
+		AbsFilename: abs,
+		Flags:       vmflags,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	vm.Eval(fmt.Sprintf("const VM = %s;", j), quickjs.EvalGlobal)
 
 	r, err := vm.Eval(string(js), quickjs.EvalGlobal)
 	if err != nil {
