@@ -8,12 +8,12 @@ import (
 	"github.com/donatj/ttouch"
 )
 
-type envflags struct {
+type EnvFlags struct {
 	Executable bool
 	Files      []string
 }
 
-var envf = envflags{}
+var envf = EnvFlags{}
 
 func init() {
 	flag.BoolVar(&envf.Executable, "e", false, "mark the file executable")
