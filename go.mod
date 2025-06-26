@@ -4,7 +4,7 @@ go 1.24
 
 toolchain go1.24.3
 
-require modernc.org/quickjs v0.15.2
+require modernc.org/quickjs v0.15.3
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
