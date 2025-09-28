@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
-	"log"
 	"os"
 
 	"github.com/donatj/ttouch"
@@ -47,12 +46,13 @@ func main() {
 			}
 		} else if err != nil {
 			fmt.Fprintf(os.Stderr, "error: file %q - %v\n", f, err)
-			continue
+			os.Exit(1)
 		}
 
 		t, err := tmpr.GetTemplate(f)
 		if err != nil && !errors.Is(err, ttouch.ErrTemplateNotFound) {
-			log.Fatal(err)
+			fmt.Fprintf(os.Stderr, "error: file %q - %v\n", f, err)
+			os.Exit(3)
 		}
 
 		mode := os.FileMode(0644)
@@ -60,8 +60,11 @@ func main() {
 			mode = os.FileMode(0755)
 		}
 
-		os.WriteFile(f, []byte(t), mode)
+		err = os.WriteFile(f, []byte(t), mode)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: file %q - %v\n", f, err)
+			os.Exit(2)
+		}
 
 	}
-
 }
