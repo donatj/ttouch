@@ -13,13 +13,13 @@ import (
 	"modernc.org/quickjs"
 )
 
-type templater struct {
-	envflags interface{}
+type templater[T any] struct {
+	Flags T
 }
 
-func New(envflags interface{}) *templater {
-	return &templater{
-		envflags: envflags,
+func New[T any](envflags T) *templater[T] {
+	return &templater[T]{
+		Flags: envflags,
 	}
 }
 
@@ -27,11 +27,11 @@ func New(envflags interface{}) *templater {
 // type in any of the template locations
 var ErrTemplateNotFound = errors.New("tempate not found")
 
-func (t *templater) GetTemplate(filename string) (string, error) {
+func (t *templater[T]) GetTemplate(filename string) (string, error) {
 	_, file := filepath.Split(filename)
 	file = strings.ToLower(file)
 	out, err := t.getTemplateFor(file+".js", filename)
-	if err != ErrTemplateNotFound {
+	if !errors.Is(err, ErrTemplateNotFound) {
 		if err != nil {
 			return "", err
 		}
@@ -46,7 +46,7 @@ func (t *templater) GetTemplate(filename string) (string, error) {
 	return t.getTemplateFor(ext+".js", filename)
 }
 
-func (t *templater) getTemplateFor(tmpFname, filename string) (string, error) {
+func (t *templater[T]) getTemplateFor(tmpFname, filename string) (string, error) {
 	tpls := scanCwdUpForFile(filepath.Join(".ttouch", tmpFname))
 	for _, tpl := range tpls {
 		js, err := os.ReadFile(tpl)
@@ -55,7 +55,11 @@ func (t *templater) getTemplateFor(tmpFname, filename string) (string, error) {
 			continue
 		}
 
-		out := runJSTemplate(string(js), filename, t.envflags)
+		out, err := runJSTemplate(string(js), filename, t.Flags)
+		if err != nil {
+			return "", err
+		}
+
 		if out != "" {
 			return out, nil
 		}
@@ -63,7 +67,11 @@ func (t *templater) getTemplateFor(tmpFname, filename string) (string, error) {
 
 	js, _ := templates.Content.ReadFile(tmpFname)
 	if js != nil && len(js) > 0 {
-		out := runJSTemplate(string(js), filename, t.envflags)
+		out, err := runJSTemplate(string(js), filename, t.Flags)
+		if err != nil {
+			return "", err
+		}
+
 		if out != "" {
 			return out, nil
 		}
@@ -100,13 +108,13 @@ func scanUpForFile(dir, fname string) []string {
 	return tmpls
 }
 
-type JSFlags struct {
+type JSFlags[T any] struct {
 	Filename    string
 	AbsFilename string
-	Flags       interface{}
+	Flags       T
 }
 
-func runJSTemplate(js, filename string, vmflags interface{}) string {
+func runJSTemplate[T any](js, filename string, vmflags T) (string, error) {
 	vm, err := quickjs.NewVM()
 	if err != nil {
 		log.Fatal(err)
@@ -121,23 +129,24 @@ func runJSTemplate(js, filename string, vmflags interface{}) string {
 	vm.RegisterFunc("ScanUp", jsScanUp, false)
 	vm.RegisterFunc("SplitPath", jsSplitpath, false)
 
-	j, err := json.Marshal(&JSFlags{
+	j, err := json.Marshal(&JSFlags[T]{
 		Filename:    filename,
 		AbsFilename: abs,
 		Flags:       vmflags,
 	})
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("failed to marshal JS flags: %w", err)
 	}
 
-	vm.Eval(fmt.Sprintf("const VM = %s;", j), quickjs.EvalGlobal)
-
-	r, err := vm.Eval(string(js), quickjs.EvalGlobal)
+	_, err = vm.Eval(fmt.Sprintf("const VM = %s;", j), quickjs.EvalGlobal)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("failed to define virtual machine flags: %w", err)
 	}
 
-	s := fmt.Sprint(r)
+	r, err := vm.Eval(js, quickjs.EvalGlobal)
+	if err != nil {
+		return "", fmt.Errorf("failed to run template: %w", err)
+	}
 
-	return s
+	return fmt.Sprint(r), nil
 }
