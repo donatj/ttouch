@@ -24,7 +24,7 @@ func init() {
 		flag.PrintDefaults()
 	}
 	flag.BoolVar(&envf.Executable, "e", false, "mark the out file(s) executable")
-	flag.BoolVar(&envf.Overwrite, "o", false, "overwrite the file(s) if they exists")
+	flag.BoolVar(&envf.Overwrite, "f", false, "overwrite the file(s) if they exists")
 	flag.Parse()
 
 	envf.Files = flag.Args()
