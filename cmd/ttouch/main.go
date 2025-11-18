@@ -13,6 +13,7 @@ import (
 type EnvFlags struct {
 	Executable bool
 	Overwrite  bool
+	Stdout     bool
 	Files      []string
 }
 
@@ -25,11 +26,18 @@ func init() {
 	}
 	flag.BoolVar(&envf.Executable, "e", false, "mark the out file(s) executable")
 	flag.BoolVar(&envf.Overwrite, "f", false, "overwrite the file(s) if they exists")
+	flag.BoolVar(&envf.Stdout, "c", false, "write output to stdout instead of creating a file")
 	flag.Parse()
 
 	envf.Files = flag.Args()
 	if len(envf.Files) == 0 {
 		fmt.Fprintln(os.Stderr, "error: at least one <file> is required")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	if envf.Stdout && len(envf.Files) > 1 {
+		fmt.Fprintln(os.Stderr, "error: -c flag can only be used with a single file")
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -41,7 +49,7 @@ func main() {
 	for _, f := range tmpr.Flags.Files {
 		_, err := os.Stat(f)
 		if errors.Is(err, fs.ErrNotExist) {
-			if !tmpr.Flags.Overwrite {
+			if !tmpr.Flags.Overwrite && !tmpr.Flags.Stdout {
 				continue
 			}
 		} else if err != nil {
@@ -55,15 +63,19 @@ func main() {
 			os.Exit(3)
 		}
 
-		mode := os.FileMode(0644)
-		if envf.Executable {
-			mode = os.FileMode(0755)
-		}
+		if envf.Stdout {
+			fmt.Print(t)
+		} else {
+			mode := os.FileMode(0644)
+			if envf.Executable {
+				mode = os.FileMode(0755)
+			}
 
-		err = os.WriteFile(f, []byte(t), mode)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error: file %q - %v\n", f, err)
-			os.Exit(2)
+			err = os.WriteFile(f, []byte(t), mode)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error: file %q - %v\n", f, err)
+				os.Exit(2)
+			}
 		}
 
 	}
