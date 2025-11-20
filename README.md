@@ -4,25 +4,15 @@
 [![GoDoc](https://godoc.org/github.com/donatj/ttouch?status.svg)](https://godoc.org/github.com/donatj/ttouch)
 [![CI](https://github.com/donatj/ttouch/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/ttouch/actions/workflows/ci.yml)
 
-**ttouch** is a command-line tool that creates files with intelligent, context-aware content using JavaScript-powered templates. Think of it as the Unix `touch` command, but instead of creating empty files, it generates files pre-populated with boilerplate code tailored to your project.
+Unix `touch` with JavaScript templates. Creates files with context-aware boilerplate instead of empty content.
 
-## What is ttouch?
+## Features
 
-ttouch automatically generates starter content for new files based on:
-- **File extension** (e.g., `.js`, `.go`, `.py`, `.sh`)
-- **File name** (e.g., `main.go`, `README.md`)
-- **Project context** (e.g., package names from existing files, composer.json for PHP)
-
-The templates are written in JavaScript (ES2023) and can be customized per-project or used globally via the built-in templates.
-
-## Why Use ttouch?
-
-- **Eliminate repetitive boilerplate**: Never type `#!/bin/bash` or `package main` again
-- **Context-aware generation**: Templates can read your project structure and adapt accordingly
-- **Highly customizable**: Write JavaScript templates with full access to file system operations
-- **Project-specific templates**: Each project can have its own `.ttouch` directory with custom templates
-- **Language agnostic**: Works with any programming language or file type
-- **Fast and lightweight**: Built in Go with minimal dependencies
+- Generates content based on file extension, name, and project context
+- JavaScript templates (ES2023) with file system access
+- Per-project or global template customization
+- Built-in templates for common file types
+- Fast, lightweight Go binary
 
 ## Installation
 
@@ -32,13 +22,13 @@ go install github.com/donatj/ttouch/cmd/ttouch@latest
 
 ## Quick Start
 
-Create a new shell script with built-in template:
+Create a shell script:
 
 ```bash
 ttouch -f script.sh
 ```
 
-This generates:
+Generates:
 ```sh
 #!/bin/sh
 
@@ -46,19 +36,19 @@ set -e
 
 ```
 
-Create a Go file that inherits the package name from existing files:
+Create a Go file (detects package from existing files):
 
 ```bash
 ttouch -f helper.go
 ```
 
-Result (if you have other `.go` files with `package myapp`):
+Result with existing `package myapp`:
 ```go
 package myapp
 
 ```
 
-Create an executable file:
+Create executable:
 
 ```bash
 ttouch -e -f deploy.sh
@@ -70,57 +60,53 @@ ttouch -e -f deploy.sh
 ttouch [flags] <file>...
 ```
 
-**Flags:**
-- `-f` - Force overwrite if file exists (required to create new files)
-- `-e` - Mark file(s) as executable
+Flags:
+- `-f` - Overwrite if exists (required for new files)
+- `-e` - Make executable
 
-**Examples:**
+Examples:
 
 ```bash
-# Create a new markdown file
+# Single file
 ttouch -f README.md
 
-# Create multiple files at once
+# Multiple files
 ttouch -f script.sh helper.go utils.js
 
-# Create executable Python script
+# Executable script
 ttouch -e -f deploy.py
 ```
 
 ## Templates
 
-The templating engine runs on the [modernc.org/quickjs](https://pkg.go.dev/modernc.org/quickjs) JavaScript runtime which targets ES2023 currently.
+Uses [modernc.org/quickjs](https://pkg.go.dev/modernc.org/quickjs) JavaScript runtime (ES2023).
 
-### How Templates Work
+### Template Discovery
 
-Templates are searched for in `.ttouch` directories starting in your current working directory and walking up to the root, similar to how `.git` directories are searched. This allows you to:
-- Have project-specific templates in your project's `.ttouch` directory
-- Share templates across multiple projects by placing them in parent directories
-- Use built-in templates when no custom template is found
+Templates live in `.ttouch` directories. Search starts in current directory and walks up to root (like `.git`).
 
-Templates are named using lowercase conventions:
-- `{ext}.js` - Matches all files with that extension (e.g., `py.js` matches `*.py`)
-- `{filename}.js` - Matches specific filenames (e.g., `readme.md.js` matches `README.md`)
+Naming:
+- `{ext}.js` - Matches extension (e.g., `py.js` for `*.py`)
+- `{filename}.js` - Matches filename (e.g., `readme.md.js` for `README.md`)
 
-**Note**: Filename matches take precedence over extension matches.
+Filename matches take precedence over extension matches.
 
-### Template Search Order
-
-1. `.ttouch/{filename}.js` in current directory (e.g., `.ttouch/readme.md.js`)
+Search order:
+1. `.ttouch/{filename}.js` in current directory
 2. `.ttouch/{filename}.js` in parent directories
-3. `.ttouch/{ext}.js` in current directory (e.g., `.ttouch/md.js`)
+3. `.ttouch/{ext}.js` in current directory
 4. `.ttouch/{ext}.js` in parent directories
-5. Built-in templates (embedded in ttouch binary)
+5. Built-in templates
 
-### Simple Template Examples
+### Writing Templates
 
-A minimal template that returns a string:
+Minimal template:
 
 ```js
 "#!/bin/sh\n";
 ```
 
-Using an Immediately Invoked Function Expression (IIFE) for more control:
+With IIFE:
 
 ```js
 (function () {
@@ -128,7 +114,7 @@ Using an Immediately Invoked Function Expression (IIFE) for more control:
 })();
 ```
 
-Or with ES6 arrow functions:
+Arrow function:
 
 ```js
 (() => {
@@ -136,17 +122,17 @@ Or with ES6 arrow functions:
 })();
 ```
 
-**Important**: The value of the template is the value of the last expression in the file.
+Template value is the last expression in the file.
 
-### The VM Object
+### VM Object
 
-Templates have access to a `VM` object containing file information:
+Templates access file information via `VM`:
 
 ```js
 {
-  "Filename": "script.sh",           // Relative filename as passed to ttouch
-  "AbsFilename": "/home/user/...",   // Absolute path to the file
-  "Flags": {                         // Command-line flags passed to ttouch
+  "Filename": "script.sh",           // Relative path
+  "AbsFilename": "/home/user/...",   // Absolute path
+  "Flags": {                         // CLI flags
     "Executable": false,
     "Overwrite": true,
     "Files": ["script.sh"]
@@ -154,7 +140,7 @@ Templates have access to a `VM` object containing file information:
 }
 ```
 
-Example using VM data:
+Example:
 
 ```js
 (() => {
@@ -165,12 +151,10 @@ Example using VM data:
 })();
 ```
 
-### Available JavaScript Functions
-
-ttouch provides several helper functions for template logic:
+### Helper Functions
 
 #### `ReadFile(path)`
-Reads and returns the contents of a file as a string.
+Read file contents.
 
 ```js
 const content = ReadFile("package.json");
@@ -178,34 +162,28 @@ const pkg = JSON.parse(content);
 ```
 
 #### `Glob(pattern)`
-Returns an array of filenames matching the glob pattern.
+Match files by pattern.
 
 ```js
 const goFiles = Glob("*.go");
-if (goFiles.length > 0) {
-    // There are existing Go files
-}
 ```
 
 #### `ScanUp(filename)`
-Searches for a file by walking up directories from the current working directory, returns an array of matching paths.
+Find file in current or parent directories.
 
 ```js
 const configs = ScanUp("package.json");
-if (configs.length > 0) {
-    // Found package.json in current or parent directory
-}
 ```
 
 #### `SplitPath(path)`
-Splits a path into directory and filename components, returns an array `[directory, filename]`.
+Split path into `[directory, filename]`.
 
 ```js
 const [dir, file] = SplitPath(VM.AbsFilename);
 ```
 
 #### `Log(...args)`
-Logs messages (useful for debugging templates).
+Debug output.
 
 ```js
 Log("Creating file:", VM.Filename);
@@ -213,30 +191,21 @@ Log("Creating file:", VM.Filename);
 
 ### Built-in Templates
 
-ttouch includes several built-in templates:
-
-- [dot.js](https://github.com/donatj/ttouch/blob/master/templates/dot.js) - Dotfiles (e.g., `.gitignore`, `.env`)
+- [dot.js](https://github.com/donatj/ttouch/blob/master/templates/dot.js) - Dotfiles
 - [go.js](https://github.com/donatj/ttouch/blob/master/templates/go.js) - Go files with package detection
-- [md.js](https://github.com/donatj/ttouch/blob/master/templates/md.js) - Markdown files with directory-based heading
-- [php.js](https://github.com/donatj/ttouch/blob/master/templates/php.js) - PHP files with PSR-4 namespace detection
-- [sh.js](https://github.com/donatj/ttouch/blob/master/templates/sh.js) - Shell scripts with shebang
+- [md.js](https://github.com/donatj/ttouch/blob/master/templates/md.js) - Markdown with directory heading
+- [php.js](https://github.com/donatj/ttouch/blob/master/templates/php.js) - PHP with PSR-4 namespaces
+- [sh.js](https://github.com/donatj/ttouch/blob/master/templates/sh.js) - Shell scripts
 
-## Creating Custom Templates
+## Custom Templates
 
-Create a `.ttouch` directory in your project:
-
-```bash
-mkdir .ttouch
-```
-
-Create a template file, for example `.ttouch/py.js`:
+Create `.ttouch/py.js`:
 
 ```js
 (() => {
     let content = "#!/usr/bin/env python3\n";
     content += '"""Module docstring."""\n\n';
     
-    // Check if this is a test file
     if (VM.Filename.includes("test_")) {
         content += "import unittest\n\n";
         content += "class TestCase(unittest.TestCase):\n";
@@ -255,20 +224,20 @@ Create a template file, for example `.ttouch/py.js`:
 })();
 ```
 
-Now when you run `ttouch -f test_utils.py`, it will create a Python test file with unittest boilerplate, while `ttouch -f utils.py` creates a regular Python module.
+Run `ttouch -f test_utils.py` for unittest template, `ttouch -f utils.py` for standard module.
 
-## Real-World Use Cases
+## Use Cases
 
-- **Project initialization**: Quickly scaffold new files with correct headers and imports
-- **Team consistency**: Share templates via `.ttouch` in your repository to ensure consistent file structure
-- **Smart boilerplate**: Templates adapt based on existing project files (package names, namespaces, etc.)
-- **Language learning**: See proper file structure for languages you're learning
-- **Automation**: Use in scripts to generate multiple files with appropriate content
+- Scaffold files with correct headers and imports
+- Maintain consistent file structure across teams
+- Generate boilerplate that adapts to existing code
+- Learn language file conventions
+- Automate multi-file generation
 
 ## Tips
 
-- **Template debugging**: Use `Log()` function to debug template execution
-- **Start simple**: Begin with static templates and add logic as needed
-- **Check built-ins**: Review the [built-in templates](https://github.com/donatj/ttouch/tree/master/templates) for inspiration
-- **Version control**: Commit your `.ttouch` directory to share templates with your team
-- **Hierarchical templates**: Place common templates in parent directories to share across multiple projects
+- Use `Log()` for debugging
+- Start with static templates, add logic later
+- Review [built-in templates](https://github.com/donatj/ttouch/tree/master/templates) for examples
+- Commit `.ttouch` directory for team sharing
+- Place common templates in parent directories for project-wide use
