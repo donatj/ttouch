@@ -25,7 +25,7 @@ go install github.com/donatj/ttouch/cmd/ttouch@latest
 Create a shell script:
 
 ```bash
-ttouch -f script.sh
+ttouch script.sh
 ```
 
 Generates:
@@ -39,7 +39,7 @@ set -e
 Create a Go file (detects package from existing files):
 
 ```bash
-ttouch -f helper.go
+ttouch helper.go
 ```
 
 Result with existing `package myapp`:
@@ -51,7 +51,7 @@ package myapp
 Create executable:
 
 ```bash
-ttouch -e -f deploy.sh
+ttouch -e deploy.sh
 ```
 
 ## Usage
@@ -61,20 +61,23 @@ ttouch [flags] <file>...
 ```
 
 Flags:
-- `-f` - Overwrite if exists (required for new files)
+- `-f` - Overwrite if file exists
 - `-e` - Make executable
 
 Examples:
 
 ```bash
-# Single file
-ttouch -f README.md
+# Create new file
+ttouch README.md
 
-# Multiple files
-ttouch -f script.sh helper.go utils.js
+# Create multiple files
+ttouch script.sh helper.go utils.js
 
-# Executable script
-ttouch -e -f deploy.py
+# Create executable
+ttouch -e deploy.py
+
+# Overwrite existing file
+ttouch -f existing-script.sh
 ```
 
 ## Templates
@@ -224,7 +227,7 @@ Create `.ttouch/py.js`:
 })();
 ```
 
-Run `ttouch -f test_utils.py` for unittest template, `ttouch -f utils.py` for standard module.
+Run `ttouch test_utils.py` for unittest template, `ttouch utils.py` for standard module.
 
 ## Use Cases
 
