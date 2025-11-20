@@ -39,14 +39,15 @@ func main() {
 	tmpr := ttouch.New(envf)
 
 	for _, f := range tmpr.Flags.Files {
-		_, err := os.Stat(f)
-		if errors.Is(err, fs.ErrNotExist) {
-			if !tmpr.Flags.Overwrite {
-				continue
-			}
-		} else if err != nil {
+		stat, err := os.Stat(f)
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
 			fmt.Fprintf(os.Stderr, "error: file %q - %v\n", f, err)
 			os.Exit(1)
+		}
+
+		if stat != nil && !tmpr.Flags.Overwrite {
+			fmt.Fprintf(os.Stderr, "warning: file %q exists, skipped (use -f to overwrite)\n", f)
+			continue
 		}
 
 		t, err := tmpr.GetTemplate(f)
