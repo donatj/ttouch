@@ -211,88 +211,15 @@ Logs messages (useful for debugging templates).
 Log("Creating file:", VM.Filename);
 ```
 
-### Built-in Template Examples
+### Built-in Templates
 
-ttouch includes several built-in templates. You can see examples of these in the [templates](https://github.com/donatj/ttouch/tree/master/templates) directory.
+ttouch includes several built-in templates:
 
-#### Shell Scripts (`sh.js`)
-
-```js
-`#!/bin/sh
-
-set -e
-
-`;
-```
-
-**Result**: Shell script with shebang and error exit enabled.
-
-#### Markdown Files (`md.js`)
-
-```js
-(() => {
-    const parts = SplitPath(VM.AbsFilename)[0].split(/[\/\\]/g);
-    const name = parts[parts.length - 2];
-    return `# ${name}\n\n`;
-})();
-```
-
-**Result**: Markdown with h1 heading using parent directory name.
-
-#### Go Files (`go.js`)
-
-```js
-(() => {
-    const existing = Glob("*.go");
-    let pkg = "main";
-    if (existing && existing.length) {
-        const content = ReadFile(existing[0]);
-        if (content !== null) {
-            const match = content.match(/^package (\w+)$/m);
-            if (match !== null && match.length) {
-                pkg = match[1];
-            }
-        }
-    }
-    let contents = "";
-    if (pkg == "main" && VM.Filename == "main.go") {
-        contents = `func main() {\n\n}\n`;
-    }
-    return `package ${pkg}
-
-${contents}`;
-})();
-```
-
-**Result**: Go file with package name detected from existing `.go` files, and a `main()` function if the file is `main.go` in package `main`.
-
-#### PHP Files (`php.js`)
-
-```js
-(() => {
-    // Reads composer.json to determine PSR-4 namespace
-    const composerFiles = ScanUp("composer.json");
-    let namespace = "";
-    
-    if (composerFiles.length > 0) {
-        const content = ReadFile(composerFiles[0]);
-        const composer = JSON.parse(content);
-        // ... namespace detection logic ...
-    }
-    
-    let result = "";
-    if (VM.Flags.Executable) {
-        result += "#!/usr/bin/env php\n";
-    }
-    result += "<?php\n\n";
-    if (namespace !== "") {
-        result += `namespace ${namespace};\n\n`;
-    }
-    return result;
-})();
-```
-
-**Result**: PHP file with optional shebang, opening tag, and PSR-4 namespace detection from `composer.json`.
+- [dot.js](https://github.com/donatj/ttouch/blob/master/templates/dot.js) - Dotfiles (e.g., `.gitignore`, `.env`)
+- [go.js](https://github.com/donatj/ttouch/blob/master/templates/go.js) - Go files with package detection
+- [md.js](https://github.com/donatj/ttouch/blob/master/templates/md.js) - Markdown files with directory-based heading
+- [php.js](https://github.com/donatj/ttouch/blob/master/templates/php.js) - PHP files with PSR-4 namespace detection
+- [sh.js](https://github.com/donatj/ttouch/blob/master/templates/sh.js) - Shell scripts with shebang
 
 ## Creating Custom Templates
 
