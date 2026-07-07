@@ -2,7 +2,7 @@ module github.com/donatj/ttouch
 
 go 1.25.0
 
-require modernc.org/quickjs v0.20.0
+require modernc.org/quickjs v0.21.0
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
