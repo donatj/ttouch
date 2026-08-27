@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/donatj/ttouch/templates"
@@ -94,7 +95,7 @@ func scanUpForFile(dir, fname string) []string {
 	cwdParts := strings.Split(dir, string(os.PathSeparator))
 	tmpls := []string{}
 
-	for n := len(cwdParts) - 1; n >= 0; n-- {
+	for n := range slices.Backward(cwdParts) {
 		p := append([]string{"/"}, cwdParts[0:n+1]...)
 		p = append(p, fname)
 
