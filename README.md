@@ -1,6 +1,5 @@
 # ttouch
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/donatj/ttouch)](https://goreportcard.com/report/github.com/donatj/ttouch)
 [![GoDoc](https://godoc.org/github.com/donatj/ttouch?status.svg)](https://godoc.org/github.com/donatj/ttouch)
 [![CI](https://github.com/donatj/ttouch/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/ttouch/actions/workflows/ci.yml)
 
